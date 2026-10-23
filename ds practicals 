@@ -40,3 +40,10 @@ int main()
 
     return 0;
 }
+
+output 
+Before Call by Value: x = 10, y = 20
+After Call by Value: x = 10, y = 20
+
+Before Call by Reference: x = 10, y = 20
+After Call by Reference: x = 20, y = 10
