@@ -1,98 +1,106 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node
-{
+struct Node {
     int data;
-    struct Node *next;
+    struct Node* next;
 };
 
-struct Node *head = NULL;
+struct Node* createNode(int value) {
+    struct Node* newNode =
+        (struct Node*)malloc(sizeof(struct Node));
 
-void insertBeginning(int x)
-{
-    struct Node *newNode;
+    if (newNode == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(1);
+    }
 
-    newNode = malloc(sizeof(struct Node));
-
-    if (newNode == NULL)
-        return;
-
-    newNode->data = x;
-    newNode->next = head;
-    head = newNode;
-}
-
-void insertEnd(int x)
-{
-    struct Node *newNode, *temp;
-
-    newNode = malloc(sizeof(struct Node));
-
-    if (newNode == NULL)
-        return;
-
-    newNode->data = x;
+    newNode->data = value;
     newNode->next = NULL;
 
-    if (head == NULL)
-    {
-        head = newNode;
-        return;
-    }
-
-    temp = head;
-
-    while (temp->next != NULL)
-        temp = temp->next;
-
-    temp->next = newNode;
+    return newNode;
 }
 
-void insertPosition(int x, int pos)
-{
-    struct Node *newNode, *temp;
-    int i;
+// Insertion at beginning
+void insertAtBeginning(struct Node** headRef, int value) {
+    struct Node* newNode = createNode(value);
 
-    if (pos < 1)
-    {
-        printf("Invalid position\n");
+    newNode->next = *headRef;
+    *headRef = newNode;
+
+    printf("Inserted %d at the beginning.\n", value);
+}
+
+// Insertion at end
+void insertAtEnd(struct Node** headRef, int value) {
+    struct Node* newNode = createNode(value);
+
+    if (*headRef == NULL) {
+        *headRef = newNode;
+        printf("Inserted %d at the end (list was empty).\n", value);
         return;
     }
 
-    if (pos == 1)
-    {
-        insertBeginning(x);
-        return;
-    }
+    struct Node* temp = *headRef;
 
-    temp = head;
-
-    for (i = 1; temp != NULL && i < pos - 1; i++)
+    while (temp->next != NULL) {
         temp = temp->next;
+    }
 
-    if (temp == NULL)
-    {
-        printf("Invalid position\n");
+    temp->next = newNode;
+
+    printf("Inserted %d at the end.\n", value);
+}
+
+// Insertion at specified position
+void insertAtPosition(struct Node** headRef,
+                      int value, int position) {
+    if (position < 1) {
+        printf("Invalid position!\n");
         return;
     }
 
-    newNode = malloc(sizeof(struct Node));
-
-    if (newNode == NULL)
+    if (position == 1) {
+        insertAtBeginning(headRef, value);
         return;
+    }
 
-    newNode->data = x;
+    struct Node* temp = *headRef;
+
+    for (int i = 1; i < position - 1; i++) {
+        if (temp == NULL) {
+            printf("Invalid position!\n");
+            return;
+        }
+
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    struct Node* newNode = createNode(value);
+
     newNode->next = temp->next;
     temp->next = newNode;
+
+    printf("Inserted %d at position %d.\n", value, position);
 }
 
-void display()
-{
-    struct Node *temp = head;
+// Display linked list
+void displayList(struct Node* head) {
+    if (head == NULL) {
+        printf("The list is currently empty.\n");
+        return;
+    }
 
-    while (temp != NULL)
-    {
+    struct Node* temp = head;
+
+    printf("Linked List: ");
+
+    while (temp != NULL) {
         printf("%d -> ", temp->data);
         temp = temp->next;
     }
@@ -100,19 +108,58 @@ void display()
     printf("NULL\n");
 }
 
-int main()
-{
-    insertBeginning(20);
-    insertBeginning(10);
-    insertEnd(40);
-    insertPosition(30, 3);
+// Free allocated memory
+void freeList(struct Node* head) {
+    struct Node* temp;
 
-    printf("Linked List: ");
-    display();
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    // Insert at beginning
+    insertAtBeginning(&head, 10);
+    insertAtBeginning(&head, 20);
+    displayList(head);
+
+    // Insert at end
+    insertAtEnd(&head, 30);
+    insertAtEnd(&head, 40);
+    displayList(head);
+
+    // Insert at specified position
+    insertAtPosition(&head, 15, 2);
+    displayList(head);
+
+    insertAtPosition(&head, 5, 1);
+    displayList(head);
+
+    insertAtPosition(&head, 100, 10);
+
+    freeList(head);
 
     return 0;
 }
 
 output 
 
-Linked List: 10 -> 20 -> 30 -> 40 -> NULL
+Inserted 10 at the beginning.
+Inserted 20 at the beginning.
+Linked List: 20 -> 10 -> NULL
+
+Inserted 30 at the end.
+Inserted 40 at the end.
+Linked List: 20 -> 10 -> 30 -> 40 -> NULL
+
+Inserted 15 at position 2.
+Linked List: 20 -> 15 -> 10 -> 30 -> 40 -> NULL
+
+Inserted 5 at the beginning.
+Linked List: 5 -> 20 -> 15 -> 10 -> 30 -> 40 -> NULL
+
+Invalid position!
