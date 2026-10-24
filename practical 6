@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node
+{
+    int data;
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+void insertBeginning(int x)
+{
+    struct Node *newNode;
+
+    newNode = malloc(sizeof(struct Node));
+
+    if (newNode == NULL)
+        return;
+
+    newNode->data = x;
+    newNode->next = head;
+    head = newNode;
+}
+
+void insertEnd(int x)
+{
+    struct Node *newNode, *temp;
+
+    newNode = malloc(sizeof(struct Node));
+
+    if (newNode == NULL)
+        return;
+
+    newNode->data = x;
+    newNode->next = NULL;
+
+    if (head == NULL)
+    {
+        head = newNode;
+        return;
+    }
+
+    temp = head;
+
+    while (temp->next != NULL)
+        temp = temp->next;
+
+    temp->next = newNode;
+}
+
+void insertPosition(int x, int pos)
+{
+    struct Node *newNode, *temp;
+    int i;
+
+    if (pos < 1)
+    {
+        printf("Invalid position\n");
+        return;
+    }
+
+    if (pos == 1)
+    {
+        insertBeginning(x);
+        return;
+    }
+
+    temp = head;
+
+    for (i = 1; temp != NULL && i < pos - 1; i++)
+        temp = temp->next;
+
+    if (temp == NULL)
+    {
+        printf("Invalid position\n");
+        return;
+    }
+
+    newNode = malloc(sizeof(struct Node));
+
+    if (newNode == NULL)
+        return;
+
+    newNode->data = x;
+    newNode->next = temp->next;
+    temp->next = newNode;
+}
+
+void display()
+{
+    struct Node *temp = head;
+
+    while (temp != NULL)
+    {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+
+    printf("NULL\n");
+}
+
+int main()
+{
+    insertBeginning(20);
+    insertBeginning(10);
+    insertEnd(40);
+    insertPosition(30, 3);
+
+    printf("Linked List: ");
+    display();
+
+    return 0;
+}
+
+output 
+
+Linked List: 10 -> 20 -> 30 -> 40 -> NULL
